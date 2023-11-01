@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Ratchet</title>
+    </head>
+    <body>
+        <input type="text" id="input">
+        <ul id="output"></ul>
+        <script>
+            const input = document.getElementById("input");
+            const output = document.getElementById("output");
+
+            const ws = new WebSocket("ws://localhost:8002");
+            
+            const addMessage = (message) => {
+                const li = document.createElement("li");
+                li.textContent = message;
+                input.value = "";
+                output.append(li);
+            };
+
+            input.addEventListener("keypress", e => {
+                if (e.key !== "Enter") {
+                    return;
+                }
+
+                const inputValue = input.value
+                addMessage(`Eu: ${inputValue}`);
+                ws.send(inputValue);
+            })
+            
+            ws.addEventListener("open", () => {
+                console.log("WebSocket connection established.");
+            });
+
+            ws.addEventListener("message", message => {
+                addMessage(`Outro: ${message.data}`);
+            })
+        </script>
+    </body>
+</html>
